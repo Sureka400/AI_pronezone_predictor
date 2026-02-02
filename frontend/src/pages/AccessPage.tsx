@@ -1,50 +1,7 @@
 import { motion } from "motion/react";
 import { Users, Shield, Eye, Lock, Settings, CheckCircle, AlertCircle } from "lucide-react";
-
-const roles = [
-  {
-    name: "Administrator",
-    level: "full",
-    users: 3,
-    permissions: [
-      "Full system access",
-      "User management",
-      "Configuration control",
-      "Data export (unrestricted)",
-      "Alert configuration",
-      "Report generation",
-    ],
-    color: "#ff3366",
-    icon: Shield,
-  },
-  {
-    name: "Analyst",
-    level: "advanced",
-    users: 12,
-    permissions: [
-      "View all dashboards",
-      "Generate reports",
-      "Export data (restricted)",
-      "Create custom views",
-      "Access historical data",
-    ],
-    color: "#00d4ff",
-    icon: Eye,
-  },
-  {
-    name: "Viewer",
-    level: "basic",
-    users: 47,
-    permissions: [
-      "View dashboards (read-only)",
-      "Access forecasting data",
-      "View reports",
-      "Basic alert notifications",
-    ],
-    color: "#00ff87",
-    icon: Users,
-  },
-];
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 const permissionMatrix = [
   { feature: "Risk Dashboard", admin: true, analyst: true, viewer: true },
@@ -59,15 +16,45 @@ const permissionMatrix = [
   { feature: "System Settings", admin: true, analyst: false, viewer: false },
 ];
 
-const activityLog = [
-  { user: "Admin Sarah K.", action: "Generated monthly report", role: "Administrator", time: "5 min ago" },
-  { user: "Analyst Mike T.", action: "Viewed Pacific NW zone details", role: "Analyst", time: "12 min ago" },
-  { user: "Viewer John D.", action: "Accessed risk dashboard", role: "Viewer", time: "18 min ago" },
-  { user: "Admin David L.", action: "Modified alert thresholds", role: "Administrator", time: "1 hour ago" },
-  { user: "Analyst Emma R.", action: "Exported zone comparison data", role: "Analyst", time: "2 hours ago" },
-];
-
 export function AccessPage() {
+  const [roles, setRoles] = useState<any[]>([]);
+  const [activityLog, setActivityLog] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.getRoles(),
+      api.getActivityLog(),
+    ]).then(([r, a]) => {
+      setRoles(r);
+      setActivityLog(a);
+      setLoading(false);
+    });
+  }, []);
+
+  const getRoleIcon = (name: string) => {
+    switch (name) {
+      case "Administrator":
+        return Shield;
+      case "Analyst":
+        return Eye;
+      case "Viewer":
+        return Users;
+      default:
+        return Users;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Access Control Data...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative px-6 py-12">
       <div className="max-w-7xl mx-auto">
@@ -97,7 +84,7 @@ export function AccessPage() {
           transition={{ delay: 0.2, duration: 0.6 }}
         >
           {roles.map((role, index) => {
-            const Icon = role.icon;
+            const Icon = getRoleIcon(role.name);
             return (
               <motion.div
                 key={index}

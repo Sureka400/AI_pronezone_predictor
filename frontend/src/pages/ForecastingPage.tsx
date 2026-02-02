@@ -1,32 +1,8 @@
 import { motion } from "motion/react";
 import { TrendingUp, Clock, Calendar, Activity, AlertTriangle } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
-const forecast24h = [
-  { hour: "00:00", risk: 35, confidence: 88 },
-  { hour: "04:00", risk: 42, confidence: 86 },
-  { hour: "08:00", risk: 58, confidence: 84 },
-  { hour: "12:00", risk: 72, confidence: 82 },
-  { hour: "16:00", risk: 81, confidence: 85 },
-  { hour: "20:00", risk: 76, confidence: 87 },
-  { hour: "24:00", risk: 65, confidence: 89 },
-];
-
-const forecast3day = [
-  { day: "Today", safe: 156, moderate: 68, high: 23 },
-  { day: "Day 2", safe: 142, moderate: 76, high: 29 },
-  { day: "Day 3", safe: 135, moderate: 81, high: 31 },
-];
-
-const forecast7day = [
-  { day: "Mon", riskIndex: 42, trend: "stable" },
-  { day: "Tue", riskIndex: 48, trend: "rising" },
-  { day: "Wed", riskIndex: 55, trend: "rising" },
-  { day: "Thu", riskIndex: 62, trend: "rising" },
-  { day: "Fri", riskIndex: 71, trend: "critical" },
-  { day: "Sat", riskIndex: 68, trend: "declining" },
-  { day: "Sun", riskIndex: 59, trend: "declining" },
-];
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -50,6 +26,34 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function ForecastingPage() {
+  const [forecast24h, setForecast24h] = useState([]);
+  const [forecast3day, setForecast3day] = useState([]);
+  const [forecast7day, setForecast7day] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.getForecast24h(),
+      api.getForecast3day(),
+      api.getForecast7day(),
+    ]).then(([d24h, d3d, d7d]) => {
+      setForecast24h(d24h);
+      setForecast3day(d3d);
+      setForecast7day(d7d);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Forecasting Data...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative px-6 py-12">
       <div className="max-w-7xl mx-auto">

@@ -1,77 +1,34 @@
 import { motion } from "motion/react";
 import { FileText, Download, Calendar, TrendingUp, FileBarChart, FileSpreadsheet, Eye } from "lucide-react";
-
-const reports = [
-  {
-    title: "Monthly Risk Assessment Report",
-    date: "January 2026",
-    type: "Executive Summary",
-    pages: 24,
-    size: "3.2 MB",
-    status: "Ready",
-    highlights: ["23 high-risk zones identified", "87.3% prediction accuracy", "12% increase in moderate zones"],
-  },
-  {
-    title: "Zone-Wise Prediction Analytics",
-    date: "December 2025",
-    type: "Technical Analysis",
-    pages: 45,
-    size: "5.8 MB",
-    status: "Ready",
-    highlights: ["Detailed zone breakdowns", "ML model performance metrics", "Feature importance analysis"],
-  },
-  {
-    title: "Q4 2025 Risk Trends",
-    date: "Q4 2025",
-    type: "Quarterly Report",
-    pages: 38,
-    size: "4.5 MB",
-    status: "Ready",
-    highlights: ["Quarterly risk escalation patterns", "Seasonal trend analysis", "Forecasting accuracy"],
-  },
-  {
-    title: "Historical Event Validation",
-    date: "2025 Annual",
-    type: "Validation Report",
-    pages: 52,
-    size: "6.1 MB",
-    status: "Ready",
-    highlights: ["Event prediction accuracy", "False positive analysis", "Model refinement insights"],
-  },
-];
-
-const insights = [
-  {
-    title: "Seismic Activity Surge",
-    zone: "Pacific Northwest",
-    severity: "high",
-    insight: "Detected 3.2x increase in seismic readings over baseline. Historical correlation suggests major event probability within 72 hours.",
-    confidence: 94,
-  },
-  {
-    title: "Temperature Anomalies",
-    zone: "Arctic Circle",
-    severity: "moderate",
-    insight: "Average temperature deviation of +4.7°C from seasonal norms. Ice melting acceleration detected.",
-    confidence: 82,
-  },
-  {
-    title: "Hurricane Formation",
-    zone: "Caribbean Basin",
-    severity: "high",
-    insight: "Category 3-4 hurricane development confirmed. Wind speeds reaching critical thresholds.",
-    confidence: 91,
-  },
-  {
-    title: "Monsoon Pattern Shift",
-    zone: "Southeast Asia",
-    severity: "moderate",
-    insight: "Unusual monsoon behavior observed. Moderate flooding risk elevated in coastal regions.",
-    confidence: 78,
-  },
-];
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 export function ReportsPage() {
+  const [reports, setReports] = useState<any[]>([]);
+  const [insights, setInsights] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.getReports(),
+      api.getInsights(),
+    ]).then(([rep, ins]) => {
+      setReports(rep);
+      setInsights(ins);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Reports & Insights...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative px-6 py-12">
       <div className="max-w-7xl mx-auto">

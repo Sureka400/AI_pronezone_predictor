@@ -1,38 +1,8 @@
 import { motion } from "motion/react";
 import { Shield, Brain, BarChart3, TrendingUp, Droplets, Thermometer, Wind, Eye } from "lucide-react";
 import { BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-
-const featureImportance = [
-  { feature: "Seismic Activity", importance: 94, color: "#ff3366" },
-  { feature: "Temperature Anomaly", importance: 87, color: "#ffb800" },
-  { feature: "Rainfall Patterns", importance: 82, color: "#00d4ff" },
-  { feature: "Wind Speed", importance: 76, color: "#4d88ff" },
-  { feature: "Humidity Levels", importance: 71, color: "#00ff87" },
-  { feature: "Atmospheric Pressure", importance: 68, color: "#ff9800" },
-  { feature: "Historical Data", importance: 85, color: "#00d4ff" },
-  { feature: "Population Density", importance: 63, color: "#9c27b0" },
-];
-
-const predictionBreakdown = [
-  {
-    zone: "Pacific Northwest",
-    confidence: 94,
-    factors: [
-      { name: "Seismic", value: 92 },
-      { name: "Temperature", value: 78 },
-      { name: "Rainfall", value: 65 },
-      { name: "Wind", value: 58 },
-      { name: "Historical", value: 88 },
-    ],
-  },
-];
-
-const modelMetrics = [
-  { metric: "Precision", score: 91.2 },
-  { metric: "Recall", score: 88.7 },
-  { metric: "F1-Score", score: 89.9 },
-  { metric: "Accuracy", score: 87.3 },
-];
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
@@ -49,6 +19,34 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export function ExplainabilityPage() {
+  const [featureImportance, setFeatureImportance] = useState<any[]>([]);
+  const [predictionBreakdown, setPredictionBreakdown] = useState<any[]>([]);
+  const [modelMetrics, setModelMetrics] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.getFeatureImportance(),
+      api.getPredictionBreakdown(),
+      api.getModelMetrics(),
+    ]).then(([feat, breakdown, metrics]) => {
+      setFeatureImportance(feat);
+      setPredictionBreakdown(breakdown);
+      setModelMetrics(metrics);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Explainability Data...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative px-6 py-12">
       <div className="max-w-7xl mx-auto">

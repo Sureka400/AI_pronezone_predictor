@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
 import { Activity, AlertCircle, CheckCircle, TrendingUp, Zap, Globe } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 interface RiskCard {
   id: string;
@@ -10,104 +12,73 @@ interface RiskCard {
   indicators: string[];
 }
 
-const riskData: RiskCard[] = [
-  {
-    id: "1",
-    zone: "Pacific Northwest",
-    riskLevel: "high",
-    confidence: 94,
-    forecast: "48-72 hours",
-    indicators: ["Seismic Activity", "Tectonic Shifts"],
-  },
-  {
-    id: "2",
-    zone: "Southeast Asia Coastal",
-    riskLevel: "moderate",
-    confidence: 78,
-    forecast: "5-7 days",
-    indicators: ["Rising Sea Levels", "Storm Patterns"],
-  },
-  {
-    id: "3",
-    zone: "Central African Region",
-    riskLevel: "safe",
-    confidence: 89,
-    forecast: "Stable",
-    indicators: ["Normal Climate", "Low Volatility"],
-  },
-  {
-    id: "4",
-    zone: "Arctic Circle",
-    riskLevel: "moderate",
-    confidence: 82,
-    forecast: "72-96 hours",
-    indicators: ["Ice Melting", "Temperature Rise"],
-  },
-  {
-    id: "5",
-    zone: "Caribbean Basin",
-    riskLevel: "high",
-    confidence: 91,
-    forecast: "24-48 hours",
-    indicators: ["Hurricane Formation", "Wind Speed"],
-  },
-  {
-    id: "6",
-    zone: "Australian Outback",
-    riskLevel: "moderate",
-    confidence: 76,
-    forecast: "3-5 days",
-    indicators: ["Drought Conditions", "Heat Waves"],
-  },
-];
-
-const getRiskColor = (level: string) => {
-  switch (level) {
-    case "safe":
-      return {
-        bg: "from-[#00ff87]/10 to-[#00ff87]/5",
-        border: "border-[#00ff87]/30",
-        text: "text-[#00ff87]",
-        glow: "glow-safe",
-      };
-    case "moderate":
-      return {
-        bg: "from-[#ffb800]/10 to-[#ffb800]/5",
-        border: "border-[#ffb800]/30",
-        text: "text-[#ffb800]",
-        glow: "glow-moderate",
-      };
-    case "high":
-      return {
-        bg: "from-[#ff3366]/10 to-[#ff3366]/5",
-        border: "border-[#ff3366]/30",
-        text: "text-[#ff3366]",
-        glow: "glow-high-risk",
-      };
-    default:
-      return {
-        bg: "from-white/10 to-white/5",
-        border: "border-white/30",
-        text: "text-white",
-        glow: "",
-      };
-  }
-};
-
-const getRiskIcon = (level: string) => {
-  switch (level) {
-    case "safe":
-      return <CheckCircle className="w-5 h-5" />;
-    case "moderate":
-      return <AlertCircle className="w-5 h-5" />;
-    case "high":
-      return <Zap className="w-5 h-5" />;
-    default:
-      return <Activity className="w-5 h-5" />;
-  }
-};
-
 export function Dashboard() {
+  const [riskData, setRiskData] = useState<RiskCard[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getRiskZones().then((data) => {
+      setRiskData(data);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Real-time Data...
+        </div>
+      </div>
+    );
+  }
+
+  const getRiskColor = (level: string) => {
+    switch (level) {
+      case "safe":
+        return {
+          bg: "from-[#00ff87]/10 to-[#00ff87]/5",
+          border: "border-[#00ff87]/30",
+          text: "text-[#00ff87]",
+          glow: "glow-safe",
+        };
+      case "moderate":
+        return {
+          bg: "from-[#ffb800]/10 to-[#ffb800]/5",
+          border: "border-[#ffb800]/30",
+          text: "text-[#ffb800]",
+          glow: "glow-moderate",
+        };
+      case "high":
+        return {
+          bg: "from-[#ff3366]/10 to-[#ff3366]/5",
+          border: "border-[#ff3366]/30",
+          text: "text-[#ff3366]",
+          glow: "glow-high-risk",
+        };
+      default:
+        return {
+          bg: "from-white/10 to-white/5",
+          border: "border-white/30",
+          text: "text-white",
+          glow: "",
+        };
+    }
+  };
+
+  const getRiskIcon = (level: string) => {
+    switch (level) {
+      case "safe":
+        return <CheckCircle className="w-5 h-5" />;
+      case "moderate":
+        return <AlertCircle className="w-5 h-5" />;
+      case "high":
+        return <Zap className="w-5 h-5" />;
+      default:
+        return <Activity className="w-5 h-5" />;
+    }
+  };
+
   return (
     <div className="relative px-6 py-20">
       <div className="max-w-7xl mx-auto">

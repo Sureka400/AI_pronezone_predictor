@@ -14,35 +14,8 @@ import {
   Legend,
 } from "recharts";
 import { TrendingUp, BarChart3, Activity } from "lucide-react";
-
-const riskTrendData = [
-  { month: "Jan", high: 18, moderate: 52, safe: 177 },
-  { month: "Feb", high: 21, moderate: 58, safe: 168 },
-  { month: "Mar", high: 19, moderate: 61, safe: 167 },
-  { month: "Apr", high: 24, moderate: 65, safe: 158 },
-  { month: "May", high: 26, moderate: 67, safe: 154 },
-  { month: "Jun", high: 23, moderate: 68, safe: 156 },
-];
-
-const predictionAccuracyData = [
-  { week: "W1", accuracy: 82 },
-  { week: "W2", accuracy: 84 },
-  { week: "W3", accuracy: 86 },
-  { week: "W4", accuracy: 85 },
-  { week: "W5", accuracy: 87 },
-  { week: "W6", accuracy: 88 },
-  { week: "W7", accuracy: 87 },
-  { week: "W8", accuracy: 89 },
-];
-
-const zoneActivityData = [
-  { zone: "Pacific NW", incidents: 12 },
-  { zone: "Caribbean", incidents: 9 },
-  { zone: "SE Asia", incidents: 7 },
-  { zone: "Arctic", incidents: 6 },
-  { zone: "Australia", incidents: 5 },
-  { zone: "Africa", incidents: 3 },
-];
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -66,6 +39,34 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function Analytics() {
+  const [riskTrendData, setRiskTrendData] = useState([]);
+  const [predictionAccuracyData, setPredictionAccuracyData] = useState([]);
+  const [zoneActivityData, setZoneActivityData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.getRiskTrend(),
+      api.getPredictionAccuracy(),
+      api.getZoneActivity(),
+    ]).then(([trend, accuracy, activity]) => {
+      setRiskTrendData(trend);
+      setPredictionAccuracyData(accuracy);
+      setZoneActivityData(activity);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Analytics Data...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative px-6 py-20">
       <div className="max-w-7xl mx-auto">
