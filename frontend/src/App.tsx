@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Navigation } from "./components/Navigation";
 import { HeroSection } from "./components/HeroSection";
-import { Footer } from "./components/Footer";
 import { RiskMap } from "./components/RiskMap";
 import { AlertSystem } from "./components/AlertSystem";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -49,8 +48,6 @@ export default function App() {
       <main className="pt-20 min-h-screen">
         {renderPage()}
       </main>
-      
-      <Footer />
     </div>
   );
 }
