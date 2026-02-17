@@ -8,12 +8,14 @@ from app.api.v1.endpoints import (
     reports,
     access,
     comparison,
-    auth
+    auth,
+    prediction
 )
 
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(prediction.router, prefix="/predict", tags=["prediction"])
 api_router.include_router(risk_zones.router, prefix="/risk-zones", tags=["risk-zones"])
 api_router.include_router(forecast.router, prefix="/forecast", tags=["forecast"])
 api_router.include_router(history.router, prefix="/history", tags=["history"])

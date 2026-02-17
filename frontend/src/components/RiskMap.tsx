@@ -96,27 +96,9 @@ export function RiskMap() {
   const [selectedZone, setSelectedZone] = useState<MapZone | null>(null);
 
   return (
-    <div className="relative px-6 py-20">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <motion.div
-          className="mb-12 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <MapPin className="w-8 h-8 text-[#00d4ff]" />
-            <h2 className="text-gradient">Interactive Risk Map</h2>
-          </div>
-          <p className="text-gray-400 text-lg">
-            Global zone visualization with real-time risk intelligence
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Map Visualization */}
+    <div className="mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Map Visualization */}
           <motion.div
             className="lg:col-span-2 glass-card relative overflow-hidden"
             initial={{ opacity: 0, x: -30 }}
@@ -409,6 +391,5 @@ export function RiskMap() {
           </motion.div>
         </div>
       </div>
-    </div>
-  );
+    );
 }

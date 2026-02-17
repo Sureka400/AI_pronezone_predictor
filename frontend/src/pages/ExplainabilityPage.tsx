@@ -34,6 +34,9 @@ export function ExplainabilityPage() {
       setPredictionBreakdown(breakdown);
       setModelMetrics(metrics);
       setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load explainability data:", err);
+      setLoading(false);
     });
   }, []);
 
@@ -110,17 +113,23 @@ export function ExplainabilityPage() {
             </p>
           </div>
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={featureImportance} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis type="number" stroke="#9ca3af" domain={[0, 100]} />
-              <YAxis dataKey="feature" type="category" stroke="#9ca3af" width={150} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="importance" radius={[0, 8, 8, 0]}>
-                {featureImportance.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
+            {featureImportance && featureImportance.length > 0 ? (
+              <BarChart data={featureImportance} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis type="number" stroke="#9ca3af" domain={[0, 100]} />
+                <YAxis dataKey="feature" type="category" stroke="#9ca3af" width={150} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="importance" radius={[0, 8, 8, 0]}>
+                  {featureImportance.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400">
+                No feature importance data available
+              </div>
+            )}
           </ResponsiveContainer>
         </motion.div>
 
@@ -211,19 +220,25 @@ export function ExplainabilityPage() {
               </p>
             </div>
             <ResponsiveContainer width="100%" height={350}>
-              <RadarChart data={predictionBreakdown[0].factors}>
-                <PolarGrid stroke="rgba(255,255,255,0.2)" />
-                <PolarAngleAxis dataKey="name" stroke="#9ca3af" />
-                <PolarRadiusAxis stroke="#9ca3af" domain={[0, 100]} />
-                <Radar
-                  name="Factor Contribution"
-                  dataKey="value"
-                  stroke="#ff3366"
-                  fill="#ff3366"
-                  fillOpacity={0.3}
-                  strokeWidth={2}
-                />
-              </RadarChart>
+              {predictionBreakdown && predictionBreakdown.length > 0 ? (
+                <RadarChart data={predictionBreakdown[0].factors}>
+                  <PolarGrid stroke="rgba(255,255,255,0.2)" />
+                  <PolarAngleAxis dataKey="name" stroke="#9ca3af" />
+                  <PolarRadiusAxis stroke="#9ca3af" domain={[0, 100]} />
+                  <Radar
+                    name="Factor Contribution"
+                    dataKey="value"
+                    stroke="#ff3366"
+                    fill="#ff3366"
+                    fillOpacity={0.3}
+                    strokeWidth={2}
+                  />
+                </RadarChart>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  No breakdown data available
+                </div>
+              )}
             </ResponsiveContainer>
             <div className="mt-4 p-4 glass rounded-lg">
               <div className="text-sm text-gray-400 mb-1">Overall Confidence</div>

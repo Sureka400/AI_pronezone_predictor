@@ -1,10 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from typing import List
 from app.models import RiskZone, User
 from app.db.session import get_database
 from app.api.v1.endpoints.auth import get_current_user
+from app.utils.forecast_service import update_risk_zones
+import datetime
 
 router = APIRouter()
+
+@router.post("/refresh")
+async def refresh_risk_data(
+    background_tasks: BackgroundTasks,
+    db = Depends(get_database),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Trigger a refresh of risk zone data from external APIs.
+    """
+    background_tasks.add_task(update_risk_zones)
+    return {"message": "Data refresh started in background"}
 
 @router.get("/", response_model=List[RiskZone])
 async def get_risk_zones(db = Depends(get_database)):

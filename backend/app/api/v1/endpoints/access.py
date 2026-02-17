@@ -1,11 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from typing import List
 from app.models import Role, ActivityLog
+from app.db.session import get_database
 
 router = APIRouter()
 
 @router.get("/roles", response_model=List[Role])
-async def get_roles():
+async def get_roles(db = Depends(get_database)):
+    # You might want to seed these as well, but for now fallback
     return [
         {
             "name": "Administrator",
@@ -49,7 +51,7 @@ async def get_roles():
     ]
 
 @router.get("/activity-log", response_model=List[ActivityLog])
-async def get_activity_log():
+async def get_activity_log(db = Depends(get_database)):
     return [
         {"user": "Admin Sarah K.", "action": "Generated monthly report", "role": "Administrator", "time": "5 min ago"},
         {"user": "Analyst Mike T.", "action": "Viewed Pacific NW zone details", "role": "Analyst", "time": "12 min ago"},

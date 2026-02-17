@@ -37,6 +37,10 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/analytics/zone-activity`);
     return response.json();
   },
+  getSystemStatus: async () => {
+    const response = await fetch(`${API_BASE_URL}/analytics/status`);
+    return response.json();
+  },
   getFeatureImportance: async () => {
     const response = await fetch(`${API_BASE_URL}/explain/feature-importance`);
     return response.json();
@@ -54,7 +58,7 @@ export const api = {
     return response.json();
   },
   getInsights: async () => {
-    const response = await fetch(`${API_BASE_URL}/insights`);
+    const response = await fetch(`${API_BASE_URL}/reports/insights`);
     return response.json();
   },
   getRoles: async () => {

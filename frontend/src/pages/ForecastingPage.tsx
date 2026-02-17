@@ -41,6 +41,9 @@ export function ForecastingPage() {
       setForecast3day(d3d);
       setForecast7day(d7d);
       setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load forecasting data:", err);
+      setLoading(false);
     });
   }, []);
 

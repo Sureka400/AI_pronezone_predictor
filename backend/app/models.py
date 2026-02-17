@@ -8,6 +8,16 @@ class RiskZone(BaseModel):
     confidence: int
     forecast: str
     indicators: List[str]
+    population: Optional[str] = "N/A"
+    lastUpdate: Optional[str] = "Just now"
+    lat: Optional[float] = 0.0
+    lng: Optional[float] = 0.0
+
+class SystemStatus(BaseModel):
+    modelAccuracy: str
+    predictionsPerHour: str
+    avgResponseTime: str
+    status: str
 
 class Forecast24h(BaseModel):
     hour: str

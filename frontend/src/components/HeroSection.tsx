@@ -1,7 +1,11 @@
 import { motion } from "motion/react";
 import { Brain, Shield, TrendingUp, AlertTriangle } from "lucide-react";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  onNavigate: (page: string) => void;
+}
+
+export function HeroSection({ onNavigate }: HeroSectionProps) {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-20">
       {/* Animated Background Orbs */}
@@ -95,7 +99,10 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <button className="glass-card hover:glow-cyan px-8 py-4 text-[#00d4ff] font-semibold flex items-center gap-2 group">
+            <button 
+              onClick={() => onNavigate("map")}
+              className="glass-card hover:glow-cyan px-8 py-4 text-[#00d4ff] font-semibold flex items-center gap-2 group"
+            >
               <Brain className="w-5 h-5 group-hover:rotate-12 transition-transform" />
               Explore Dashboard
             </button>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Navigation } from "./components/Navigation";
 import { HeroSection } from "./components/HeroSection";
-import { RiskMap } from "./components/RiskMap";
 import { AlertSystem } from "./components/AlertSystem";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ForecastingPage } from "./pages/ForecastingPage";
@@ -9,7 +8,6 @@ import { ExplainabilityPage } from "./pages/ExplainabilityPage";
 import { ComparisonPage } from "./pages/ComparisonPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { ReportsPage } from "./pages/ReportsPage";
-import { AccessPage } from "./pages/AccessPage";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>("home");
@@ -17,15 +15,13 @@ export default function App() {
   const renderPage = () => {
     switch (currentPage) {
       case "home":
-        return <HeroSection />;
-      case "dashboard":
-        return <DashboardPage />;
+        return <HeroSection onNavigate={setCurrentPage} />;
       case "forecasting":
         return <ForecastingPage />;
       case "explainability":
         return <ExplainabilityPage />;
       case "map":
-        return <RiskMap />;
+        return <DashboardPage />;
       case "compare":
         return <ComparisonPage />;
       case "alerts":
@@ -34,8 +30,6 @@ export default function App() {
         return <HistoryPage />;
       case "reports":
         return <ReportsPage />;
-      case "access":
-        return <AccessPage />;
       default:
         return <HeroSection />;
     }

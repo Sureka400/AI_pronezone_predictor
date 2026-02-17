@@ -1,4 +1,5 @@
 import os
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 
@@ -20,7 +21,8 @@ async def connect_to_mongo():
     db_client.client = AsyncIOMotorClient(
         MONGODB_URL,
         serverSelectionTimeoutMS=5000,
-        connectTimeoutMS=5000
+        connectTimeoutMS=5000,
+        tlsCAFile=certifi.where()
     )
     db_client.db = db_client.client[DATABASE_NAME]
 

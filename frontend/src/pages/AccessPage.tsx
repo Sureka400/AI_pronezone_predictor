@@ -29,6 +29,9 @@ export function AccessPage() {
       setRoles(r);
       setActivityLog(a);
       setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load access control data:", err);
+      setLoading(false);
     });
   }, []);
 

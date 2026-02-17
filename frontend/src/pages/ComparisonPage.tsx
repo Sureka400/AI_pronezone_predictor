@@ -17,6 +17,9 @@ export function ComparisonPage() {
       setZoneComparison(zones);
       setTrendData(trend);
       setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load comparison data:", err);
+      setLoading(false);
     });
   }, []);
 
@@ -56,7 +59,6 @@ export function ComparisonPage() {
   }
 };
 
-export function ComparisonPage() {
   return (
     <div className="relative px-6 py-12">
       <div className="max-w-7xl mx-auto">

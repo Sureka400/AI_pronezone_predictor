@@ -1,5 +1,8 @@
 import { motion } from "motion/react";
 import { Activity, AlertCircle, CheckCircle, TrendingUp, Zap, Globe, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
+import { RiskMap } from "../components/RiskMap";
 
 interface RiskCard {
   id: string;
@@ -8,92 +11,9 @@ interface RiskCard {
   confidence: number;
   forecast: string;
   indicators: string[];
-  population: string;
-  lastUpdate: string;
+  population?: string;
+  lastUpdate?: string;
 }
-
-const riskData: RiskCard[] = [
-  {
-    id: "1",
-    zone: "Pacific Northwest",
-    riskLevel: "high",
-    confidence: 94,
-    forecast: "48-72 hours",
-    indicators: ["Seismic Activity", "Tectonic Shifts"],
-    population: "14.2M",
-    lastUpdate: "2 min ago",
-  },
-  {
-    id: "2",
-    zone: "Southeast Asia Coastal",
-    riskLevel: "moderate",
-    confidence: 78,
-    forecast: "5-7 days",
-    indicators: ["Rising Sea Levels", "Storm Patterns"],
-    population: "68.5M",
-    lastUpdate: "5 min ago",
-  },
-  {
-    id: "3",
-    zone: "Central African Region",
-    riskLevel: "safe",
-    confidence: 89,
-    forecast: "Stable",
-    indicators: ["Normal Climate", "Low Volatility"],
-    population: "22.1M",
-    lastUpdate: "8 min ago",
-  },
-  {
-    id: "4",
-    zone: "Arctic Circle",
-    riskLevel: "moderate",
-    confidence: 82,
-    forecast: "72-96 hours",
-    indicators: ["Ice Melting", "Temperature Rise"],
-    population: "4.3M",
-    lastUpdate: "12 min ago",
-  },
-  {
-    id: "5",
-    zone: "Caribbean Basin",
-    riskLevel: "high",
-    confidence: 91,
-    forecast: "24-48 hours",
-    indicators: ["Hurricane Formation", "Wind Speed"],
-    population: "43.7M",
-    lastUpdate: "3 min ago",
-  },
-  {
-    id: "6",
-    zone: "Australian Outback",
-    riskLevel: "moderate",
-    confidence: 76,
-    forecast: "3-5 days",
-    indicators: ["Drought Conditions", "Heat Waves"],
-    population: "2.8M",
-    lastUpdate: "15 min ago",
-  },
-  {
-    id: "7",
-    zone: "Mediterranean Coast",
-    riskLevel: "safe",
-    confidence: 85,
-    forecast: "Stable",
-    indicators: ["Normal Conditions", "Low Risk"],
-    population: "152.3M",
-    lastUpdate: "10 min ago",
-  },
-  {
-    id: "8",
-    zone: "Central America",
-    riskLevel: "moderate",
-    confidence: 79,
-    forecast: "4-6 days",
-    indicators: ["Volcanic Activity", "Tremors"],
-    population: "51.2M",
-    lastUpdate: "7 min ago",
-  },
-];
 
 const getRiskColor = (level: string) => {
   switch (level) {
@@ -142,6 +62,36 @@ const getRiskIcon = (level: string) => {
 };
 
 export function DashboardPage() {
+  const [riskData, setRiskData] = useState<RiskCard[]>([]);
+  const [systemStatus, setSystemStatus] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.getRiskZones(),
+      api.getSystemStatus()
+    ])
+      .then(([data, status]) => {
+        setRiskData(data);
+        setSystemStatus(status);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load dashboard data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-[#00d4ff] text-2xl font-bold animate-pulse">
+          Loading Risk Intelligence...
+        </div>
+      </div>
+    );
+  }
+
   const criticalCount = riskData.filter((z) => z.riskLevel === "high").length;
   const moderateCount = riskData.filter((z) => z.riskLevel === "moderate").length;
   const safeCount = riskData.filter((z) => z.riskLevel === "safe").length;
@@ -235,6 +185,9 @@ export function DashboardPage() {
             </div>
           </motion.div>
         </div>
+
+        {/* Integrated Risk Map */}
+        <RiskMap />
 
         {/* Zone Risk Cards */}
         <motion.div
@@ -356,21 +309,23 @@ export function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
               <div className="text-sm text-gray-400 mb-1">Model Accuracy</div>
-              <div className="text-2xl font-bold text-white">87.3%</div>
+              <div className="text-2xl font-bold text-white">{systemStatus?.modelAccuracy || "87.3%"}</div>
             </div>
             <div>
               <div className="text-sm text-gray-400 mb-1">Predictions/Hour</div>
-              <div className="text-2xl font-bold text-white">1,247</div>
+              <div className="text-2xl font-bold text-white">{systemStatus?.predictionsPerHour || "1,247"}</div>
             </div>
             <div>
               <div className="text-sm text-gray-400 mb-1">Avg Response Time</div>
-              <div className="text-2xl font-bold text-white">1.2s</div>
+              <div className="text-2xl font-bold text-white">{systemStatus?.avgResponseTime || "1.2s"}</div>
             </div>
             <div>
               <div className="text-sm text-gray-400 mb-1">System Status</div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#00ff87] pulse-glow"></div>
-                <span className="text-[#00ff87] font-semibold">Operational</span>
+                <div className={`w-2 h-2 rounded-full ${systemStatus?.status === 'Operational' ? 'bg-[#00ff87]' : 'bg-yellow-400'} pulse-glow`}></div>
+                <span className={`${systemStatus?.status === 'Operational' ? 'text-[#00ff87]' : 'text-yellow-400'} font-semibold`}>
+                  {systemStatus?.status || "Operational"}
+                </span>
               </div>
             </div>
           </div>

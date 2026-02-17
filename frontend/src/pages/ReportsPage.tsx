@@ -13,8 +13,11 @@ export function ReportsPage() {
       api.getReports(),
       api.getInsights(),
     ]).then(([rep, ins]) => {
-      setReports(rep);
-      setInsights(ins);
+      setReports(Array.isArray(rep) ? rep : []);
+      setInsights(Array.isArray(ins) ? ins : []);
+      setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load reports data:", err);
       setLoading(false);
     });
   }, []);

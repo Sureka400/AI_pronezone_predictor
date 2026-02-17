@@ -16,9 +16,13 @@ export function HistoryPage() {
       api.getHistoricalData(),
       api.getHistoricalEvents(),
     ]).then(([data, events]) => {
-      setHistoricalData(data);
-      setHistoricalEvents(events);
-      setCurrentIndex(data.length - 1);
+      const validData = Array.isArray(data) ? data : [];
+      setHistoricalData(validData);
+      setHistoricalEvents(Array.isArray(events) ? events : []);
+      setCurrentIndex(validData.length > 0 ? validData.length - 1 : 0);
+      setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load historical data:", err);
       setLoading(false);
     });
   }, []);

@@ -11,7 +11,6 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { label: "Dashboard", icon: LayoutDashboard, page: "dashboard" },
     { label: "Forecasting", icon: TrendingUp, page: "forecasting" },
     { label: "Explainability", icon: Shield, page: "explainability" },
     { label: "Geo-Risk Map", icon: Map, page: "map" },
@@ -19,7 +18,6 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     { label: "Alerts", icon: AlertTriangle, page: "alerts" },
     { label: "History", icon: Clock, page: "history" },
     { label: "Reports", icon: FileText, page: "reports" },
-    { label: "Access", icon: Users, page: "access" },
   ];
 
   const handleNavigate = (page: string) => {
