@@ -77,4 +77,14 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/comparison/trend`);
     return response.json();
   },
+  predict: async (data: any) => {
+    const response = await fetch(`${API_BASE_URL}/predict`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
 };
